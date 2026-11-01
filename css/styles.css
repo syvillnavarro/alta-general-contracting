@@ -451,6 +451,7 @@ textarea {
 .hero-photo.compare,
 .banner-photo.compare {
   z-index: 0;
+  touch-action: none;
 }
 
 .hero-photo.compare::after,

@@ -49,8 +49,10 @@
     var labelAfter = figure.querySelector(".compare-label-after");
     if (!section || !before || !line) return;
 
+    var touchId = null;
+
     function place(clientX) {
-      var rect = section.getBoundingClientRect();
+      var rect = figure.getBoundingClientRect();
       var ratio = (clientX - rect.left) / rect.width;
       if (ratio < 0) ratio = 0;
       if (ratio > 1) ratio = 1;
@@ -70,19 +72,32 @@
       if (labelAfter) labelAfter.style.opacity = "";
     }
 
-    section.addEventListener("pointermove", function (event) {
-      if (event.pointerType === "touch" && event.buttons === 0) return;
+    section.addEventListener("pointerdown", function (event) {
+      if (event.pointerType !== "touch" || !figure.contains(event.target)) return;
+      touchId = event.pointerId;
+      try {
+        figure.setPointerCapture(event.pointerId);
+      } catch (err) {}
       place(event.clientX);
     });
-    section.addEventListener("pointerdown", function (event) {
-      if (event.pointerType !== "touch") return;
+    section.addEventListener("pointermove", function (event) {
+      if (event.pointerType === "touch") {
+        if (event.pointerId !== touchId) return;
+        place(event.clientX);
+        return;
+      }
       place(event.clientX);
     });
     section.addEventListener("pointerup", function (event) {
-      if (event.pointerType === "touch") reset();
+      if (event.pointerId === touchId) touchId = null;
     });
-    section.addEventListener("pointerleave", reset);
-    section.addEventListener("pointercancel", reset);
+    section.addEventListener("pointercancel", function (event) {
+      if (event.pointerId === touchId) touchId = null;
+    });
+    section.addEventListener("pointerleave", function (event) {
+      if (event.pointerType === "touch" || touchId !== null) return;
+      reset();
+    });
   });
 
   var lightbox = document.querySelector(".lightbox");
