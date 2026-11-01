@@ -2,7 +2,7 @@
   if (location.hostname.endsWith("github.io")) {
     var bar = document.createElement("div");
     bar.className = "preview-bar";
-    bar.innerHTML = "Design preview for Alta General Contracting Ltd. The public site is still <a href=\"https://www.altagc.ca\">www.altagc.ca</a>. This page does not take payment.";
+    bar.textContent = "Design preview for Alta General Contracting Ltd.";
     document.body.insertBefore(bar, document.body.firstChild);
     var meta = document.createElement("meta");
     meta.name = "robots";
@@ -49,7 +49,7 @@
     var labelAfter = figure.querySelector(".compare-label-after");
     if (!section || !before || !line) return;
 
-    var touchId = null;
+    var dragging = false;
 
     function place(clientX) {
       var rect = figure.getBoundingClientRect();
@@ -72,31 +72,31 @@
       if (labelAfter) labelAfter.style.opacity = "";
     }
 
-    section.addEventListener("pointerdown", function (event) {
-      if (event.pointerType !== "touch" || !figure.contains(event.target)) return;
-      touchId = event.pointerId;
-      try {
-        figure.setPointerCapture(event.pointerId);
-      } catch (err) {}
-      place(event.clientX);
-    });
     section.addEventListener("pointermove", function (event) {
-      if (event.pointerType === "touch") {
-        if (event.pointerId !== touchId) return;
-        place(event.clientX);
-        return;
-      }
+      if (event.pointerType === "touch") return;
       place(event.clientX);
-    });
-    section.addEventListener("pointerup", function (event) {
-      if (event.pointerId === touchId) touchId = null;
-    });
-    section.addEventListener("pointercancel", function (event) {
-      if (event.pointerId === touchId) touchId = null;
     });
     section.addEventListener("pointerleave", function (event) {
-      if (event.pointerType === "touch" || touchId !== null) return;
+      if (event.pointerType === "touch") return;
       reset();
+    });
+
+    figure.addEventListener("touchstart", function (event) {
+      if (!event.touches.length) return;
+      dragging = true;
+      event.preventDefault();
+      place(event.touches[0].clientX);
+    }, { passive: false });
+    figure.addEventListener("touchmove", function (event) {
+      if (!dragging || !event.touches.length) return;
+      event.preventDefault();
+      place(event.touches[0].clientX);
+    }, { passive: false });
+    figure.addEventListener("touchend", function () {
+      dragging = false;
+    });
+    figure.addEventListener("touchcancel", function () {
+      dragging = false;
     });
   });
 
