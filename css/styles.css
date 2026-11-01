@@ -405,6 +405,60 @@ textarea {
   object-position: 30% center;
 }
 
+.compare img {
+  object-position: center center;
+}
+
+.compare-before {
+  clip-path: inset(0 50% 0 0);
+}
+
+.compare-label,
+.compare-line {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.compare-label {
+  top: 1.15rem;
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  background: rgba(18, 20, 16, 0.72);
+  color: var(--cream);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.compare-label-before {
+  left: max(var(--pad), calc((100% - 1440px) / 2 + var(--pad)));
+}
+
+.compare-label-after {
+  right: max(var(--pad), calc((100% - 1440px) / 2 + var(--pad)));
+}
+
+.compare-line {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: rgba(246, 241, 230, 0.92);
+  box-shadow: 0 0 0 1px rgba(18, 20, 16, 0.28);
+}
+
+.hero-photo.compare,
+.banner-photo.compare {
+  z-index: 0;
+}
+
+.hero-photo.compare::after,
+.banner:not(.plain) .banner-photo.compare::after {
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(18, 20, 16, 0.18) 0%, rgba(18, 20, 16, 0.38) 30%, rgba(18, 20, 16, 0.74) 62%, rgba(18, 20, 16, 0.92) 100%);
+}
+
 .photo-caption {
   position: absolute;
   left: 1rem;
@@ -1449,11 +1503,62 @@ form {
     grid-template-columns: 1fr 1fr;
   }
 
-  .banner-photo {
-    position: absolute;
-    inset: 0;
+  .hero,
+  .banner:not(.plain) {
+    display: flex;
+    flex-direction: column;
     min-height: 0;
-    order: 0;
+  }
+
+  .hero-photo,
+  .banner-photo {
+    position: relative;
+    inset: auto;
+    order: -1;
+    height: 48vh;
+    min-height: 16rem;
+  }
+
+  .hero-copy,
+  .banner .banner-copy {
+    min-height: 0;
+    width: 100%;
+    padding: 1.35rem var(--pad) 1.85rem;
+    background: var(--dark);
+  }
+
+  .hero h1,
+  .banner h1 {
+    font-size: clamp(2.05rem, 8vw, 2.6rem);
+  }
+
+  .hero .eyebrow {
+    color: #d7b98a;
+  }
+
+  .hero-actions,
+  .banner-actions {
+    margin-top: 1.35rem;
+  }
+
+  .hero-photo.compare::after,
+  .banner:not(.plain) .banner-photo.compare::after {
+    background: linear-gradient(180deg, rgba(18, 20, 16, 0.35) 0%, rgba(18, 20, 16, 0.05) 28%, rgba(18, 20, 16, 0.28) 100%);
+  }
+
+  .compare-label {
+    top: 0.85rem;
+  }
+
+  .sectors {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin-top: 1.15rem;
+  }
+
+  .sectors li + li::before {
+    display: none;
   }
 
   .gallery-grid figure {
@@ -1663,6 +1768,10 @@ form {
   .hero-photo img,
   .banner-photo img {
     animation: settle 1.5s cubic-bezier(0.22, 0.7, 0.2, 1) both;
+  }
+
+  .compare-label {
+    transition: opacity 0.25s ease;
   }
 
   .btn,

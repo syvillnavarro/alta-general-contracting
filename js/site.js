@@ -41,6 +41,50 @@
     });
   });
 
+  document.querySelectorAll("[data-compare]").forEach(function (figure) {
+    var section = figure.closest(".hero, .banner");
+    var before = figure.querySelector(".compare-before");
+    var line = figure.querySelector(".compare-line");
+    var labelBefore = figure.querySelector(".compare-label-before");
+    var labelAfter = figure.querySelector(".compare-label-after");
+    if (!section || !before || !line) return;
+
+    function place(clientX) {
+      var rect = section.getBoundingClientRect();
+      var ratio = (clientX - rect.left) / rect.width;
+      if (ratio < 0) ratio = 0;
+      if (ratio > 1) ratio = 1;
+      var split = ratio * 100;
+      before.style.clipPath = "inset(0 " + (100 - split) + "% 0 0)";
+      line.style.left = split + "%";
+      line.style.opacity = split < 1.2 || split > 98.8 ? "0" : "1";
+      if (labelBefore) labelBefore.style.opacity = split < 6 ? "0" : "1";
+      if (labelAfter) labelAfter.style.opacity = split > 94 ? "0" : "1";
+    }
+
+    function reset() {
+      before.style.clipPath = "";
+      line.style.left = "";
+      line.style.opacity = "";
+      if (labelBefore) labelBefore.style.opacity = "";
+      if (labelAfter) labelAfter.style.opacity = "";
+    }
+
+    section.addEventListener("pointermove", function (event) {
+      if (event.pointerType === "touch" && event.buttons === 0) return;
+      place(event.clientX);
+    });
+    section.addEventListener("pointerdown", function (event) {
+      if (event.pointerType !== "touch") return;
+      place(event.clientX);
+    });
+    section.addEventListener("pointerup", function (event) {
+      if (event.pointerType === "touch") reset();
+    });
+    section.addEventListener("pointerleave", reset);
+    section.addEventListener("pointercancel", reset);
+  });
+
   var lightbox = document.querySelector(".lightbox");
   if (lightbox) {
     lightbox.addEventListener("click", function () {
